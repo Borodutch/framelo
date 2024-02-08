@@ -8,8 +8,10 @@ export class Entry {
   title!: string
   @prop({ index: true, required: true })
   imageURL!: string
-  @prop({ index: true, required: true, default: 1300 })
+  @prop({ index: true, required: true, default: 1200 })
   score!: number
+  @prop({ index: true, required: true, default: 0 })
+  votes!: number
 }
 
 export const EntryModel = getModelForClass(Entry)
