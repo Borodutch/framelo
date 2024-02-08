@@ -21,6 +21,7 @@ export default class RootController {
 
   @Post('/')
   async action(@Body({ required: true }) {}: FrameAction) {
+    // TODO: verify the payload
     // TODO: record the action
     const [a, b] = await getRandomPair()
     return getFrame(a, b)

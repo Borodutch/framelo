@@ -33,7 +33,7 @@ export default function getFrame(
       <script>
         window
           .location
-          .replace('https://warpcast.com/farcasteradmin.eth');
+          .replace('https://warpcast.com/~/channel/framelo');
       </script>
     </head>
     
