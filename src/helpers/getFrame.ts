@@ -27,7 +27,7 @@ export default function getFrame(
       <meta property="fc:frame:image" content="${env.URL}/${a._id}/${b._id}" />
       <meta property="fc:frame:button:1" content="${max255Char(a.title)}" />
       <meta property="fc:frame:button:2" content="${max255Char(b.title)}" />
-      <meta property="fc:frame:post_url" content="${env.URL}" />
+      <meta property="fc:frame:post_url" content="${env.URL}/${a._id}/${b._id}" />
 
       <!-- Redirect -->
       <script>

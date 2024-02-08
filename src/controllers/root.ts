@@ -10,6 +10,11 @@ import env from '@/helpers/env'
 import { resolve } from 'path'
 import { cwd } from 'process'
 import { createReadStream } from 'fs'
+import VoteParameters from '@/validators/VoteParameters'
+import validateSignedData from '@/helpers/validateSignedData'
+import Elo from '@pelevesque/elo'
+
+const elo = new Elo()
 
 @Controller('/')
 export default class RootController {
@@ -19,12 +24,39 @@ export default class RootController {
     return getFrame(a, b)
   }
 
-  @Post('/')
-  async action(@Body({ required: true }) {}: FrameAction) {
-    // TODO: verify the payload
-    // TODO: record the action
-    const [a, b] = await getRandomPair()
-    return getFrame(a, b)
+  @Post(['/', '/:aId/:bId'])
+  async action(
+    @Params() { aId, bId }: VoteParameters,
+    @Body({ required: true })
+    {
+      trustedData: { messageBytes },
+      untrustedData: { url, buttonIndex },
+    }: FrameAction
+  ) {
+    await validateSignedData(messageBytes)
+    if (aId && bId) {
+      const [a, b] = await Promise.all([
+        EntryModel.findById(aId),
+        EntryModel.findById(bId),
+      ])
+      if (a && b) {
+        const outcome = elo.getOutcome(
+          a.score,
+          b.score,
+          buttonIndex === 1 ? 1 : 0
+        )
+        await EntryModel.updateOne(
+          { _id: aId },
+          { $set: { score: outcome.a.rating } }
+        )
+        await EntryModel.updateOne(
+          { _id: bId },
+          { $set: { score: outcome.b.rating } }
+        )
+      }
+    }
+    const [newA, newB] = await getRandomPair()
+    return getFrame(newA, newB)
   }
 
   @Get('/og.jpg')
