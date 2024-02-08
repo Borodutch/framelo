@@ -7,7 +7,10 @@ import {
   UltimateTextToImage,
   VerticalImage,
   getCanvasImage,
+  registerFont,
 } from 'ultimate-text-to-image'
+
+registerFont(resolve(cwd(), 'fonts', 'Roboto-Regular.ttf'))
 
 export default async function (a: DocumentType<Entry>, b: DocumentType<Entry>) {
   // get buffer for image a
@@ -20,7 +23,7 @@ export default async function (a: DocumentType<Entry>, b: DocumentType<Entry>) {
   const imageB = await getCanvasImage({ buffer: bufferB })
 
   const title = new UltimateTextToImage('Which do you rank higher?', {
-    fontFamily: 'Arial',
+    fontFamily: 'Roboto',
     fontSize: 40,
     margin: 10,
     width: 955,
