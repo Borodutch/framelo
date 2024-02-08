@@ -2,9 +2,7 @@
 node_modules
 *.log
 dist
-images/*
-!images/.gitkeep
-!images/og.jpg
+images
 
 # yarn
 .pnp.*

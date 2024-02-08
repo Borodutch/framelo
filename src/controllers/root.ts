@@ -28,7 +28,7 @@ export default class RootController {
 
   @Get('/og.jpg')
   og() {
-    return createReadStream(resolve(cwd(), 'images', 'og.jpg'))
+    return createReadStream(resolve(cwd(), 'static', 'og.jpg'))
   }
 
   @Get('/random')
