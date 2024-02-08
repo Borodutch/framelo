@@ -64,6 +64,7 @@ export default class RootController {
     )
     // Return new frame
     const [newA, newB] = await getRandomFIDPair()
+    console.log('Returning new frame', newA.fid, newB.fid)
     return getFIDFrame(newA, newB)
   }
 
@@ -126,7 +127,7 @@ export default class RootController {
     return getImage(entryA, entryB)
   }
 
-  @Get('/:aFID/:bFID')
+  @Get('/fid/:aFID/:bFID')
   async fidImage(
     @Params() { aFID, bFID }: FIDVoteParameters,
     @Ctx() ctx: Context
