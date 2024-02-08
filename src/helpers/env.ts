@@ -10,4 +10,5 @@ export default cleanEnv(process.env, {
   MONGO: str(),
   PORT: num({ default: 1337 }),
   URL: str(),
+  NEYNAR_API_KEY: str(),
 })

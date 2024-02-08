@@ -13,6 +13,11 @@ import { createReadStream } from 'fs'
 import VoteParameters from '@/validators/VoteParameters'
 import validateSignedData from '@/helpers/validateSignedData'
 import Elo from '@pelevesque/elo'
+import getRandomFIDPair from '@/helpers/getRandomFIDPair'
+import getFIDFrame from '@/helpers/getFIDFrame'
+import FIDVoteParameters from '@/validators/FIDVoteParameters'
+import { FIDEntryModel } from '@/models/FIDEntry'
+import getFIDImage from '@/helpers/getFIDImage'
 
 const elo = new Elo()
 
@@ -24,13 +29,51 @@ export default class RootController {
     return getFrame(a, b)
   }
 
+  @Get('/fid')
+  async fid() {
+    const [a, b] = await getRandomFIDPair()
+    return getFIDFrame(a, b)
+  }
+
+  @Post('/fid/:aFID/:bFID')
+  async fidAction(
+    @Params() { aFID, bFID }: FIDVoteParameters,
+    @Body({ required: true })
+    {
+      trustedData: { messageBytes },
+      untrustedData: { buttonIndex },
+    }: FrameAction,
+    @Ctx() ctx: Context
+  ) {
+    await validateSignedData(messageBytes)
+    const [a, b] = await Promise.all([
+      FIDEntryModel.findOne({ fid: aFID }),
+      FIDEntryModel.findOne({ fid: bFID }),
+    ])
+    if (!a || !b) {
+      return ctx.throw(notFound('Users not found'))
+    }
+    const outcome = elo.getOutcome(a.score, b.score, buttonIndex === 1 ? 1 : 0)
+    await EntryModel.updateOne(
+      { fid: aFID },
+      { $set: { score: outcome.a.rating }, $inc: { votes: 1 } }
+    )
+    await EntryModel.updateOne(
+      { fid: bFID },
+      { $set: { score: outcome.b.rating }, $inc: { votes: 1 } }
+    )
+    // Return new frame
+    const [newA, newB] = await getRandomFIDPair()
+    return getFIDFrame(newA, newB)
+  }
+
   @Post(['/', '/:aId/:bId'])
   async action(
     @Params() { aId, bId }: VoteParameters,
     @Body({ required: true })
     {
       trustedData: { messageBytes },
-      untrustedData: { url, buttonIndex },
+      untrustedData: { buttonIndex },
     }: FrameAction
   ) {
     await validateSignedData(messageBytes)
@@ -55,6 +98,7 @@ export default class RootController {
         )
       }
     }
+    // Return new pair
     const [newA, newB] = await getRandomPair()
     return getFrame(newA, newB)
   }
@@ -80,5 +124,20 @@ export default class RootController {
       return ctx.throw(notFound('Image not found'))
     }
     return getImage(entryA, entryB)
+  }
+
+  @Get('/:aFID/:bFID')
+  async fidImage(
+    @Params() { aFID, bFID }: FIDVoteParameters,
+    @Ctx() ctx: Context
+  ) {
+    const [entryA, entryB] = await Promise.all([
+      FIDEntryModel.findOne({ fid: aFID }),
+      FIDEntryModel.findOne({ fid: bFID }),
+    ])
+    if (!entryA || !entryB) {
+      return ctx.throw(notFound('Image not found'))
+    }
+    return getFIDImage(entryA, entryB)
   }
 }

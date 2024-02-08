@@ -1,4 +1,4 @@
-import { HubRestAPIClient } from '@standard-crypto/farcaster-js-hub-rest'
+import { HubRestAPIClient } from '@standard-crypto/farcaster-js'
 
 const client = new HubRestAPIClient()
 
