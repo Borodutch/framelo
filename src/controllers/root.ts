@@ -47,11 +47,11 @@ export default class RootController {
         )
         await EntryModel.updateOne(
           { _id: aId },
-          { $set: { score: outcome.a.rating } }
+          { $set: { score: outcome.a.rating }, $inc: { votes: 1 } }
         )
         await EntryModel.updateOne(
           { _id: bId },
-          { $set: { score: outcome.b.rating } }
+          { $set: { score: outcome.b.rating }, $inc: { votes: 1 } }
         )
       }
     }
