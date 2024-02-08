@@ -20,6 +20,7 @@ export default async function (a: DocumentType<Entry>, b: DocumentType<Entry>) {
   const imageB = await getCanvasImage({ buffer: bufferB })
 
   const title = new UltimateTextToImage('Which do you rank higher?', {
+    fontFamily: 'Arial',
     fontSize: 40,
     margin: 10,
     width: 955,
