@@ -29,30 +29,31 @@ export default async function (
   // get image a
   let imageA: Image
   try {
-    imageA = await getCanvasImage({ url: userA.pfp.url })
-  } catch (error) {
     if (existsSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`))) {
       imageA = await getCanvasImage({
         buffer: readFileSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`)),
       })
     } else {
-      console.error(error instanceof Error ? error.message : error)
-      imageA = await getCanvasImage({ buffer: brokenImageBuffer })
+      imageA = await getCanvasImage({ url: userA.pfp.url })
     }
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error)
+    imageA = await getCanvasImage({ buffer: brokenImageBuffer })
   }
+
   // get image b
   let imageB: Image
   try {
-    imageB = await getCanvasImage({ url: userB.pfp.url })
-  } catch (error) {
     if (existsSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`))) {
       imageB = await getCanvasImage({
         buffer: readFileSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`)),
       })
     } else {
-      console.error(error instanceof Error ? error.message : error)
-      imageB = await getCanvasImage({ buffer: brokenImageBuffer })
+      imageB = await getCanvasImage({ url: userB.pfp.url })
     }
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error)
+    imageB = await getCanvasImage({ buffer: brokenImageBuffer })
   }
 
   const title = new UltimateTextToImage('Who do you rank higher?', {
