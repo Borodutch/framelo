@@ -1,7 +1,7 @@
 import { Entry } from '@/models/Entry'
 import { FIDEntry } from '@/models/FIDEntry'
 import { DocumentType } from '@typegoose/typegoose'
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import { cwd } from 'process'
 import {
@@ -31,16 +31,28 @@ export default async function (
   try {
     imageA = await getCanvasImage({ url: userA.pfp.url })
   } catch (error) {
-    console.error(error instanceof Error ? error.message : error)
-    imageA = await getCanvasImage({ buffer: brokenImageBuffer })
+    if (existsSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`))) {
+      imageA = await getCanvasImage({
+        buffer: readFileSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`)),
+      })
+    } else {
+      console.error(error instanceof Error ? error.message : error)
+      imageA = await getCanvasImage({ buffer: brokenImageBuffer })
+    }
   }
   // get image b
   let imageB: Image
   try {
     imageB = await getCanvasImage({ url: userB.pfp.url })
   } catch (error) {
-    console.error(error instanceof Error ? error.message : error)
-    imageB = await getCanvasImage({ buffer: brokenImageBuffer })
+    if (existsSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`))) {
+      imageB = await getCanvasImage({
+        buffer: readFileSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`)),
+      })
+    } else {
+      console.error(error instanceof Error ? error.message : error)
+      imageB = await getCanvasImage({ buffer: brokenImageBuffer })
+    }
   }
 
   const title = new UltimateTextToImage('Who do you rank higher?', {
