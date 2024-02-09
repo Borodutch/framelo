@@ -1,8 +1,4 @@
-import { HubRestAPIClient } from '@standard-crypto/farcaster-js'
-
-const client = new HubRestAPIClient({
-  hubUrl: 'https://hub.freefarcasterhub.com:3281',
-})
+import client from '@/helpers/client'
 
 export default async function (messageBytes: string) {
   try {

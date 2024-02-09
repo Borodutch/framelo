@@ -1,4 +1,3 @@
-import { Entry } from '@/models/Entry'
 import { FIDEntry } from '@/models/FIDEntry'
 import { DocumentType } from '@typegoose/typegoose'
 import { existsSync, readFileSync } from 'fs'
@@ -10,10 +9,10 @@ import {
   getCanvasImage,
   registerFont,
 } from 'ultimate-text-to-image'
-import getUserByFID from '@/helpers/getUserByFID'
 import { Image } from 'canvas'
 import download from 'download'
 import sharp from 'sharp'
+import getPFPByFID from '@/helpers/getPFPByFID'
 
 registerFont(resolve(cwd(), 'fonts', 'Roboto-Regular.ttf'))
 
@@ -23,11 +22,8 @@ export default async function (
   a: DocumentType<FIDEntry>,
   b: DocumentType<FIDEntry>
 ) {
-  const userA = await getUserByFID(a.fid)
-  const userB = await getUserByFID(b.fid)
-  if (!userA || !userB) {
-    throw new Error('User not found')
-  }
+  const userAPFP = await getPFPByFID(a.fid)
+  const userBPFP = await getPFPByFID(b.fid)
   // get image a
   let imageA: Image
   try {
@@ -40,16 +36,20 @@ export default async function (
           .toBuffer(),
       })
     } else {
-      imageA = await getCanvasImage({ url: userA.pfp.url })
-      try {
-        await download(userA.pfp.url, resolve(cwd(), 'fidImages'), {
-          filename: `${userA.fid}.jpg`,
-        })
-      } catch (error) {
-        console.error(
-          `Error downloading ${userA.fid} pfp`,
-          error instanceof Error ? error.message : error
-        )
+      imageA = userAPFP
+        ? await getCanvasImage({ url: userAPFP })
+        : await getCanvasImage({ buffer: brokenImageBuffer })
+      if (userAPFP) {
+        try {
+          await download(userAPFP, resolve(cwd(), 'fidImages'), {
+            filename: `${a.fid}.jpg`,
+          })
+        } catch (error) {
+          console.error(
+            `Error downloading ${a.fid} pfp`,
+            error instanceof Error ? error.message : error
+          )
+        }
       }
     }
   } catch (error) {
@@ -69,16 +69,20 @@ export default async function (
           .toBuffer(),
       })
     } else {
-      imageB = await getCanvasImage({ url: userB.pfp.url })
-      try {
-        await download(userB.pfp.url, resolve(cwd(), 'fidImages'), {
-          filename: `${userB.fid}.jpg`,
-        })
-      } catch (error) {
-        console.error(
-          `Error downloading ${userB.fid} pfp`,
-          error instanceof Error ? error.message : error
-        )
+      imageB = userBPFP
+        ? await getCanvasImage({ url: userBPFP })
+        : await getCanvasImage({ buffer: brokenImageBuffer })
+      if (userBPFP) {
+        try {
+          await download(userBPFP, resolve(cwd(), 'fidImages'), {
+            filename: `${b.fid}.jpg`,
+          })
+        } catch (error) {
+          console.error(
+            `Error downloading ${b.fid} pfp`,
+            error instanceof Error ? error.message : error
+          )
+        }
       }
     }
   } catch (error) {

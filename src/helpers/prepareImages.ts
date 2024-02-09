@@ -4,24 +4,24 @@ import { readdirSync } from 'fs'
 import { resolve } from 'path'
 import { cwd } from 'process'
 import maxFID from '@/helpers/maxFID'
-import getUserByFID from '@/helpers/getUserByFID'
+import getPFPByFID from './getPFPByFID'
 
 async function prepareFidImages() {
   console.log('Now to FID images...')
   const fidFiles = readdirSync(resolve(cwd(), 'fidImages'))
-  for (let i = 0; i < maxFID; i++) {
+  for (let i = 1; i <= maxFID; i++) {
     const filename = `${i}.jpg`
     const fileExists = fidFiles.includes(filename)
     if (fileExists) {
       continue
     }
     console.log(`Downloading image for FID ${i}...`)
-    const user = await getUserByFID(i)
-    if (!user) {
+    const pfpUrl = await getPFPByFID(i)
+    if (!pfpUrl) {
       continue
     }
     try {
-      await download(user.pfp.url, resolve(cwd(), 'fidImages'), {
+      await download(pfpUrl, resolve(cwd(), 'fidImages'), {
         filename,
       })
       await delay(5)
