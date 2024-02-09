@@ -24,6 +24,7 @@ async function prepareFidImages() {
       await download(user.pfp.url, resolve(cwd(), 'fidImages'), {
         filename,
       })
+      await delay(5)
     } catch (error) {
       console.error(
         `Error downloading image for FID ${i}: ${
@@ -33,6 +34,10 @@ async function prepareFidImages() {
     }
   }
   console.log('All FID images downloaded')
+}
+
+function delay(s: number) {
+  return new Promise((resolve) => setTimeout(resolve, s * 1000))
 }
 
 export default async function () {
