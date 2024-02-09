@@ -12,6 +12,7 @@ import {
 } from 'ultimate-text-to-image'
 import getUserByFID from '@/helpers/getUserByFID'
 import { Image } from 'canvas'
+import download from 'download'
 
 registerFont(resolve(cwd(), 'fonts', 'Roboto-Regular.ttf'))
 
@@ -35,6 +36,16 @@ export default async function (
       })
     } else {
       imageA = await getCanvasImage({ url: userA.pfp.url })
+      try {
+        await download(userA.pfp.url, resolve(cwd(), 'fidImages'), {
+          filename: `${userA.fid}.jpg`,
+        })
+      } catch (error) {
+        console.error(
+          `Error downloading ${userA.fid} pfp`,
+          error instanceof Error ? error.message : error
+        )
+      }
     }
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
@@ -50,6 +61,16 @@ export default async function (
       })
     } else {
       imageB = await getCanvasImage({ url: userB.pfp.url })
+      try {
+        await download(userB.pfp.url, resolve(cwd(), 'fidImages'), {
+          filename: `${userB.fid}.jpg`,
+        })
+      } catch (error) {
+        console.error(
+          `Error downloading ${userB.fid} pfp`,
+          error instanceof Error ? error.message : error
+        )
+      }
     }
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
