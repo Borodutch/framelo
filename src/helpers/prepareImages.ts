@@ -21,6 +21,7 @@ async function prepareFidImages() {
       continue
     }
     try {
+      console.log(`Downloading ${pfpUrl}`)
       await download(pfpUrl, resolve(cwd(), 'fidImages'), {
         filename,
       })
