@@ -6,6 +6,35 @@ import { cwd } from 'process'
 import maxFID from '@/helpers/maxFID'
 import getUserByFID from '@/helpers/getUserByFID'
 
+async function prepareFidImages() {
+  console.log('Now to FID images...')
+  const fidFiles = readdirSync(resolve(cwd(), 'fidImages'))
+  for (let i = 0; i < maxFID; i++) {
+    const filename = `${i}.jpg`
+    const fileExists = fidFiles.includes(filename)
+    if (fileExists) {
+      continue
+    }
+    console.log(`Downloading image for FID ${i}...`)
+    const user = await getUserByFID(i)
+    if (!user) {
+      continue
+    }
+    try {
+      await download(user.pfp.url, resolve(cwd(), 'fidImages'), {
+        filename,
+      })
+    } catch (error) {
+      console.error(
+        `Error downloading image for FID ${i}: ${
+          error instanceof Error ? error.message : error
+        }`
+      )
+    }
+  }
+  console.log('All FID images downloaded')
+}
+
 export default async function () {
   const path = resolve(cwd(), 'images')
   const files = readdirSync(path)
@@ -35,30 +64,5 @@ export default async function () {
     console.log(`Downloaded ${entry.title} to ${path}/${filename}`)
   }
   console.log('All images downloaded')
-  console.log('Now to FID images...')
-  const fidFiles = readdirSync(resolve(cwd(), 'fidImages'))
-  for (let i = 0; i < maxFID; i++) {
-    const filename = `${i}.jpg`
-    const fileExists = fidFiles.includes(filename)
-    if (fileExists) {
-      continue
-    }
-    console.log(`Downloading image for FID ${i}...`)
-    const user = await getUserByFID(i)
-    if (!user) {
-      continue
-    }
-    try {
-      await download(user.pfp.url, resolve(cwd(), 'fidImages'), {
-        filename,
-      })
-    } catch (error) {
-      console.error(
-        `Error downloading image for FID ${i}: ${
-          error instanceof Error ? error.message : error
-        }`
-      )
-    }
-  }
-  console.log('All FID images downloaded')
+  void prepareFidImages()
 }
