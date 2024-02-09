@@ -1,7 +1,8 @@
 import { FIDEntryModel } from '@/models/FIDEntry'
+import maxFID from '@/helpers/maxFID'
 
 export default async function () {
-  const count = 10000
+  const count = maxFID
   const randomA = Math.floor(Math.random() * count)
   let randomB = Math.floor(Math.random() * count)
   while (randomA === randomB) {

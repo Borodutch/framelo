@@ -3,6 +3,7 @@ node_modules
 *.log
 dist
 images
+fidImages
 
 # yarn
 .pnp.*
