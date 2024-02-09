@@ -78,7 +78,7 @@ export default async function (
         {
           canvasImage: imageA,
           layer: 0,
-          repeat: 'fit',
+          repeat: 'fitX',
           x: 0,
           y: 0,
           width: 477,
@@ -87,7 +87,7 @@ export default async function (
         {
           canvasImage: imageB,
           layer: 1,
-          repeat: 'fit',
+          repeat: 'fitX',
           x: 478,
           y: 0,
           width: 477,
