@@ -13,6 +13,7 @@ import {
 import getUserByFID from '@/helpers/getUserByFID'
 import { Image } from 'canvas'
 import download from 'download'
+import sharp from 'sharp'
 
 registerFont(resolve(cwd(), 'fonts', 'Roboto-Regular.ttf'))
 
@@ -32,7 +33,11 @@ export default async function (
   try {
     if (existsSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`))) {
       imageA = await getCanvasImage({
-        buffer: readFileSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`)),
+        buffer: await sharp(
+          readFileSync(resolve(cwd(), 'fidImages', `${a.fid}.jpg`))
+        )
+          .jpeg()
+          .toBuffer(),
       })
     } else {
       imageA = await getCanvasImage({ url: userA.pfp.url })
@@ -57,7 +62,11 @@ export default async function (
   try {
     if (existsSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`))) {
       imageB = await getCanvasImage({
-        buffer: readFileSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`)),
+        buffer: await sharp(
+          readFileSync(resolve(cwd(), 'fidImages', `${b.fid}.jpg`))
+        )
+          .jpeg()
+          .toBuffer(),
       })
     } else {
       imageB = await getCanvasImage({ url: userB.pfp.url })

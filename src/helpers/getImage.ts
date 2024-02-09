@@ -9,17 +9,18 @@ import {
   getCanvasImage,
   registerFont,
 } from 'ultimate-text-to-image'
+import sharp from 'sharp'
 
 registerFont(resolve(cwd(), 'fonts', 'Roboto-Regular.ttf'))
 
 export default async function (a: DocumentType<Entry>, b: DocumentType<Entry>) {
   // get buffer for image a
   const localPathA = resolve(cwd(), 'images', `${a._id}.jpg`)
-  const bufferA = await readFileSync(localPathA)
+  const bufferA = await sharp(readFileSync(localPathA)).jpeg().toBuffer()
   const imageA = await getCanvasImage({ buffer: bufferA })
   // get buffer for image b
   const localPathB = resolve(cwd(), 'images', `${b._id}.jpg`)
-  const bufferB = await readFileSync(localPathB)
+  const bufferB = await sharp(readFileSync(localPathB)).jpeg().toBuffer()
   const imageB = await getCanvasImage({ buffer: bufferB })
 
   const title = new UltimateTextToImage('Which do you rank higher?', {
