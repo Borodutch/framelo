@@ -54,11 +54,11 @@ export default class RootController {
       return ctx.throw(notFound('Users not found'))
     }
     const outcome = elo.getOutcome(a.score, b.score, buttonIndex === 1 ? 1 : 0)
-    await EntryModel.updateOne(
+    await FIDEntryModel.updateOne(
       { fid: aFID },
       { $set: { score: outcome.a.rating }, $inc: { votes: 1 } }
     )
-    await EntryModel.updateOne(
+    await FIDEntryModel.updateOne(
       { fid: bFID },
       { $set: { score: outcome.b.rating }, $inc: { votes: 1 } }
     )
