@@ -24,13 +24,15 @@ const elo = new Elo()
 @Controller('/')
 export default class RootController {
   @Get('/')
-  async root() {
+  async root(@Ctx() ctx: Context) {
+    ctx.set('Cache-Control', 'max-age=60')
     const [a, b] = await getRandomPair()
     return getFrame(a, b)
   }
 
   @Get('/fid')
-  async fid() {
+  async fid(@Ctx() ctx: Context) {
+    ctx.set('Cache-Control', 'max-age=60')
     const [a, b] = await getRandomFIDPair()
     return getFIDFrame(a, b)
   }
@@ -65,6 +67,7 @@ export default class RootController {
     // Return new frame
     const [newA, newB] = await getRandomFIDPair()
     console.log('Returning new frame', newA.fid, newB.fid)
+    ctx.set('Cache-Control', 'max-age=60')
     return getFIDFrame(newA, newB)
   }
 
@@ -75,7 +78,8 @@ export default class RootController {
     {
       trustedData: { messageBytes },
       untrustedData: { buttonIndex },
-    }: FrameAction
+    }: FrameAction,
+    @Ctx() ctx: Context
   ) {
     await validateSignedData(messageBytes)
     if (aId && bId) {
@@ -101,6 +105,7 @@ export default class RootController {
     }
     // Return new pair
     const [newA, newB] = await getRandomPair()
+    ctx.set('Cache-Control', 'max-age=60')
     return getFrame(newA, newB)
   }
 
