@@ -25,14 +25,14 @@ const elo = new Elo()
 export default class RootController {
   @Get('/')
   async root(@Ctx() ctx: Context) {
-    ctx.set('Cache-Control', 'max-age=60')
+    ctx.response.set('Cache-Control', 'max-age=60')
     const [a, b] = await getRandomPair()
     return getFrame(a, b)
   }
 
   @Get('/fid')
   async fid(@Ctx() ctx: Context) {
-    ctx.set('Cache-Control', 'max-age=60')
+    ctx.response.set('Cache-Control', 'max-age=60')
     const [a, b] = await getRandomFIDPair()
     return getFIDFrame(a, b)
   }
@@ -67,7 +67,7 @@ export default class RootController {
     // Return new frame
     const [newA, newB] = await getRandomFIDPair()
     console.log('Returning new frame', newA.fid, newB.fid)
-    ctx.set('Cache-Control', 'max-age=60')
+    ctx.response.set('Cache-Control', 'max-age=60')
     return getFIDFrame(newA, newB)
   }
 
@@ -105,7 +105,7 @@ export default class RootController {
     }
     // Return new pair
     const [newA, newB] = await getRandomPair()
-    ctx.set('Cache-Control', 'max-age=60')
+    ctx.response.set('Cache-Control', 'max-age=60')
     return getFrame(newA, newB)
   }
 
@@ -122,6 +122,7 @@ export default class RootController {
 
   @Get('/:a/:b')
   async image(@Params() { a, b }: ImageParameters, @Ctx() ctx: Context) {
+    ctx.response.set('Content-Type', 'image/png')
     const [entryA, entryB] = await Promise.all([
       EntryModel.findById(a),
       EntryModel.findById(b),
@@ -137,6 +138,7 @@ export default class RootController {
     @Params() { aFID, bFID }: FIDVoteParameters,
     @Ctx() ctx: Context
   ) {
+    ctx.response.set('Content-Type', 'image/png')
     const [entryA, entryB] = await Promise.all([
       FIDEntryModel.findOne({ fid: aFID }),
       FIDEntryModel.findOne({ fid: bFID }),
